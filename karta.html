@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory crambs</title>
+</head>
+
+<body onload="setIndex(`${indexURL}`);">
+    <main class="page-layout">
+        <aside class="ind">
+            <div id="inddiv">
+
+            </div>
+        </aside>
+        <section class="content-panel">
+            <div id="media-container" class="media-container">
+                <img id="media-preview" src="" alt="Media Preview" style="max-width: 100%; max-height: 100%;" />
+                <!-- <p>Select a JPG or MP4 file from the left panel to view it here.</p> -->
+            </div>
+        </section>
+    </main>
+    <script>
+        const indexURL = `${window.location.href.match(/.*\//)[0]}`;
+        const setView = (url) => {
+            const mediaPreview = document.getElementById('media-preview');
+            mediaPreview.src = url;
+        };
+
+        const setIndex = async () => {
+            const indDiv = document.querySelector('#inddiv');
+            const data = await getIndexData(`${indexURL}/json`);
+            indDiv.innerHTML = `<pre>${data}</pre>`;
+        };
+
+        const getIndexData = async (url) => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const jarr = await response.json();
+                //return jarr.map(item => `<a href="${item.name}">${item.name}</a><br>`).join('');
+                return jarr.map(item => `<button type=button onclick="setView('${indexURL}data/${item.name}')">${item.name}</button>`).join('<br>');
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return '';
+            }
+        }
+
+    </script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        button {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        .media-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #ccc;
+            height: 100%;
+        }
+    </style>
+</body>
+
+</html>
